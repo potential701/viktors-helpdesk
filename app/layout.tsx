@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import {Inter} from 'next/font/google'
 import "./globals.css";
 
-const font = Inter();
+const font = Inter({subsets: ['latin']});
 
 export const metadata: Metadata = {
   title: "Viktors Helpdesk",
