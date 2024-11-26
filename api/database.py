@@ -1,7 +1,7 @@
 from dotenv import dotenv_values
 from sqlmodel import create_engine, SQLModel, Session
 
-secrets = dotenv_values('.env.local')
+secrets = dotenv_values('.env')
 
 DATABASE_URL = secrets['NEON_DATABASE_URL']
 

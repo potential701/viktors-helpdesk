@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 from api.database import get_session
 
-secrets = dotenv_values('.env.local')
+secrets = dotenv_values('.env')
 
 DATABASE_URL = secrets['NEON_DATABASE_URL']
 
