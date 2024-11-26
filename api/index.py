@@ -3,9 +3,15 @@ from flask import Flask
 app = Flask(__name__)
 
 
-@app.route('/api/hello', methods=['GET'])
-def hello():
-    return {'message': 'Hello, World!'}
+# Create FastAPI instance
+app = FastAPI()
 
-if __name__ == '__main__':
-    app.run(port=5328)
+
+@app.on_event('startup')
+def on_startup():
+    create_db_and_tables()
+
+
+@app.get('/api/hello')
+def hello():
+    return JSONResponse(status_code=status.HTTP_200_OK, content={'message': 'Hello, World!'})
