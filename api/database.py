@@ -1,9 +1,10 @@
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from sqlmodel import create_engine, SQLModel, Session
+import os
 
-secrets = dotenv_values('.env')
+load_dotenv()
 
-DATABASE_URL = secrets['NEON_DATABASE_URL']
+DATABASE_URL = os.environ.get("NEON_DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 
