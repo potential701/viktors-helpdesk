@@ -27,7 +27,7 @@ async def scalar_html():
 
 
 @app.post('/api/register')
-def register(user: User, session: SessionDependency):
+async def register(user: User, session: SessionDependency):
     db_user = session.exec(select(User).where(User.username == user.username)).first()
     if db_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='User with this username already exists.')
@@ -35,7 +35,7 @@ def register(user: User, session: SessionDependency):
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), salt)
     user.password = hashed_password.decode('utf-8')
-    session.add(User)
+    session.add(user)
     session.commit()
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={'message': 'User registered successfully.'})
