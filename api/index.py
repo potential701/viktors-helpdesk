@@ -1,38 +1,15 @@
-from typing import Annotated
-from fastapi import FastAPI, status, Depends
+import bcrypt
+from fastapi import FastAPI, status, HTTPException
 from fastapi.responses import JSONResponse
-from sqlmodel import SQLModel, Field, Session, create_engine
-from dotenv import dotenv_values
+from sqlmodel import select
+from scalar_fastapi import get_scalar_api_reference
 
-# Load environment variables
-secrets = dotenv_values('.env.local')
-
-
-class User(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    username: str = Field(index=True)
-    password: str = Field()
-    access_level: str = Field()
-
-
-# Create SQLAlchemy database engine
-database_url = secrets['NEON_DATABASE_URL']
-engine = create_engine(database_url)
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
-SessionDep = Annotated[Session, Depends(get_session)]
+from api.database import create_db_and_tables
+from api.dependencies import SessionDependency
+from api.models import User
 
 # Create FastAPI instance
-app = FastAPI()
+app = FastAPI(openapi_url='/api/openapi.json')
 
 
 @app.on_event('startup')
@@ -43,3 +20,22 @@ def on_startup():
 @app.get('/api/hello')
 def hello():
     return JSONResponse(status_code=status.HTTP_200_OK, content={'message': 'Hello, World!'})
+
+@app.get('/api/scalar')
+async def scalar_html():
+    return get_scalar_api_reference(openapi_url='/api/openapi.json', title='Scalar')
+
+
+@app.post('/api/register')
+def register(user: User, session: SessionDependency):
+    db_user = session.exec(select(User).where(User.username == user.username)).first()
+    if db_user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='User with this username already exists.')
+
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), salt)
+    user.password = hashed_password.decode('utf-8')
+    session.add(User)
+    session.commit()
+
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content={'message': 'User registered successfully.'})
