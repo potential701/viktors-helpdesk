@@ -11,7 +11,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from api.database import create_db_and_tables
 from api.dependencies import SessionDependency, JWT_SECRET
-from api.models import User
+from api.models import User, Verify
 
 # Create FastAPI instance
 app = FastAPI(openapi_url='/api/openapi.json')
@@ -57,15 +57,16 @@ async def login(user: User, session: SessionDependency):
     if not is_password_correct:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Username or password is incorrect.')
 
-    token = jwt.encode(payload={'exp':datetime.datetime.now() + datetime.timedelta(minutes=2)}, key=JWT_SECRET, algorithm='HS256')
+    expiry_date = datetime.datetime.now() + datetime.timedelta(minutes=2)
+    token = jwt.encode(payload={'exp':expiry_date}, key=JWT_SECRET, algorithm='HS256')
 
-    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message': 'Login successful.', 'token': token})
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message': 'Login successful.', 'token': token, 'expires_at': expiry_date.isoformat()})
 
 
 @app.post('/api/verify')
-async def verify(token: str):
+async def verify(verification: Verify):
     try:
-        jwt.decode(token, key=JWT_SECRET, algorithms=['HS256'])
+        jwt.decode(verification.token, key=JWT_SECRET, algorithms=['HS256'])
         return JSONResponse(status_code=status.HTTP_200_OK, content={'message': 'Token is valid.'})
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token has expired.')
