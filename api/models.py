@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlmodel import SQLModel, Field
 
 
@@ -6,3 +7,6 @@ class User(SQLModel, table=True):
     username: str = Field(index=True)
     password: str = Field()
     access_level: str = Field()
+
+class Verify(BaseModel):
+    token: str

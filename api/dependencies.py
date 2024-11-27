@@ -9,5 +9,6 @@ from api.database import get_session
 load_dotenv()
 
 DATABASE_URL = os.environ.get("NEON_DATABASE_URL")
+JWT_SECRET = os.environ.get("JWT_SECRET")
 
 SessionDependency = Annotated[Session, Depends(get_session)]
