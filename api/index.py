@@ -4,7 +4,7 @@ import bcrypt
 import jwt
 import datetime
 
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Response
 from fastapi.responses import JSONResponse
 from sqlmodel import select
 from scalar_fastapi import get_scalar_api_reference
@@ -48,7 +48,7 @@ async def register(user: User, session: SessionDependency):
 
 
 @app.post('/api/login')
-async def login(user: User, session: SessionDependency):
+async def login(user: User, session: SessionDependency, response: Response):
     db_user = session.exec(select(User).where(User.username == user.username)).first()
     if not db_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
@@ -60,14 +60,21 @@ async def login(user: User, session: SessionDependency):
     expiry_date = datetime.datetime.now() + datetime.timedelta(minutes=2)
     token = jwt.encode(payload={'exp': expiry_date, 'username': db_user.username}, key=JWT_SECRET, algorithm='HS256')
 
-    return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+    response =  JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                         content={'message': 'Login successful.', 'token': token, 'expires_at': expiry_date.isoformat()})
+    response.set_cookie(key='auth_token', value=token, expires=expiry_date.astimezone(datetime.timezone.utc))
+    return response
 
 
-@app.post('/api/verify')
-async def verify(verification: Verify):
+
+@app.get('/api/verify')
+async def verify(token: str, session: SessionDependency):
     try:
-        jwt.decode(verification.token, key=JWT_SECRET, algorithms=['HS256'])
+        payload = jwt.decode(token, key=JWT_SECRET, algorithms=['HS256'])
+        db_user = session.exec(select(User).where(User.username == payload['username'])).first()
+        if not db_user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
+
         return JSONResponse(status_code=status.HTTP_200_OK, content={'message': 'Token is valid.'})
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token has expired.')
