@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.environ.get("NEON_DATABASE_URL")
+DATABASE_URL = os.environ.get("DATABASE_URL_SECRET")
 
 engine = create_engine(DATABASE_URL)
 
