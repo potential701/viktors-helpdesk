@@ -8,8 +8,8 @@ const variants = cva([
   variants: {
     variant: {
       primary: [
-        'bg-teal-400 text-neutral-950 border border-teal-400 data-[hover]:bg-teal-500 data-[hover]:border-teal-500',
-        'data-[active]:scale-95 data-[disabled]:bg-teal-300 data-[disabled]:border-teal-300 data-[disabled]:text-neutral-600'
+        'bg-neutral-100 text-neutral-950 border border-neutral-100 data-[hover]:bg-neutral-200 data-[hover]:border-neutral-200',
+        'data-[active]:scale-95 data-[disabled]:bg-neutral-300 data-[disabled]:border-neutral-300 data-[disabled]:text-neutral-600'
       ],
       secondary: ''
     },
