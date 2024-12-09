@@ -58,9 +58,10 @@ async def login(user: User, session: SessionDependency):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Username or password is incorrect.')
 
     expiry_date = datetime.datetime.now() + datetime.timedelta(minutes=2)
-    token = jwt.encode(payload={'exp':expiry_date}, key=JWT_SECRET, algorithm='HS256')
+    token = jwt.encode(payload={'exp': expiry_date, 'username': db_user.username}, key=JWT_SECRET, algorithm='HS256')
 
-    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message': 'Login successful.', 'token': token, 'expires_at': expiry_date.isoformat()})
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+                        content={'message': 'Login successful.', 'token': token, 'expires_at': expiry_date.isoformat()})
 
 
 @app.post('/api/verify')
