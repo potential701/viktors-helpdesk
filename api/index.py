@@ -78,3 +78,12 @@ async def verify(token: str, session: SessionDependency):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token has expired.')
     except:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token is invalid.')
+
+@app.get('/api/user/read')
+async def user_read(token:str, session: SessionDependency):
+    payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+    statement = select(User).where(User.username == payload['username'])
+    result = session.exec(statement)
+    db_user = result.first()
+    db_user.password = ''
+    return db_user
