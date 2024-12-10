@@ -1,0 +1,7 @@
+export default function Page(){
+  return (
+    <main>
+      Create new ticket
+    </main>
+  );
+}
