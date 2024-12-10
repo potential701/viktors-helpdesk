@@ -55,7 +55,7 @@ async def login(user: User, session: SessionDependency):
     if not is_password_correct:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Username or password is incorrect.')
 
-    expiry_date = datetime.datetime.now() + datetime.timedelta(minutes=2)
+    expiry_date = datetime.datetime.now() + datetime.timedelta(days=1)
     token = jwt.encode(payload={'exp': expiry_date, 'username': db_user.username}, key=JWT_SECRET, algorithm='HS256')
 
     response =  JSONResponse(status_code=status.HTTP_202_ACCEPTED,
