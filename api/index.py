@@ -1,5 +1,3 @@
-from time import gmtime
-
 import bcrypt
 import jwt
 import datetime
@@ -11,7 +9,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from api.database import create_db_and_tables
 from api.dependencies import SessionDependency, JWT_SECRET
-from api.models import User, Verify
+from api.models import User
 
 # Create FastAPI instance
 app = FastAPI(openapi_url='/api/openapi.json')
@@ -27,12 +25,12 @@ def hello():
     return JSONResponse(status_code=status.HTTP_200_OK, content={'message': 'Hello, World!'})
 
 
-@app.get('/api/scalar')
-async def scalar_html():
+@app.get('/api/docs')
+async def docs():
     return get_scalar_api_reference(openapi_url='/api/openapi.json', title='Scalar')
 
 
-@app.post('/api/register')
+@app.post('/api/auth/register')
 async def register(user: User, session: SessionDependency):
     db_user = session.exec(select(User).where(User.username == user.username)).first()
     if db_user:
@@ -47,8 +45,8 @@ async def register(user: User, session: SessionDependency):
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={'message': 'User registered successfully.'})
 
 
-@app.post('/api/login')
-async def login(user: User, session: SessionDependency, response: Response):
+@app.post('/api/auth/login')
+async def login(user: User, session: SessionDependency):
     db_user = session.exec(select(User).where(User.username == user.username)).first()
     if not db_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found.')
@@ -67,7 +65,7 @@ async def login(user: User, session: SessionDependency, response: Response):
 
 
 
-@app.get('/api/verify')
+@app.get('/api/auth/verify')
 async def verify(token: str, session: SessionDependency):
     try:
         payload = jwt.decode(token, key=JWT_SECRET, algorithms=['HS256'])

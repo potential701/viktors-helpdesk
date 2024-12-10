@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   const auth_token = cookieStore.get('auth_token');
 
   try {
-    await axios.get(process.env.NEXT_PUBLIC_BASE_URL + '/api/verify?token=' + auth_token?.value)
+    await axios.get(process.env.NEXT_PUBLIC_BASE_URL + '/api/auth/verify?token=' + auth_token?.value)
 
     if (unauthenticatedRoutes.includes(request.nextUrl.pathname)) {
       return NextResponse.redirect(new URL('/', request.url))
