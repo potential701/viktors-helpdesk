@@ -5,8 +5,10 @@ import {cookies} from 'next/headers';
 const unauthenticatedRoutes = ['/auth/login', '/auth/register']
 
 export async function middleware(request: NextRequest) {
+  const headers = new Headers(request.headers);
   const cookieStore = await cookies();
   const auth_token = cookieStore.get('auth_token');
+  headers.set('x-current-path', request.nextUrl.pathname);
 
   try {
     await axios.get(process.env.NEXT_PUBLIC_BASE_URL + '/api/auth/verify?token=' + auth_token?.value)
@@ -19,6 +21,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
   }
+
+  return NextResponse.next({headers});
 }
 
 export const config = {
