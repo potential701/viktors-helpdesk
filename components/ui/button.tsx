@@ -11,7 +11,10 @@ const variants = cva([
         'bg-neutral-100 text-neutral-950 border border-neutral-100 data-[hover]:bg-neutral-200 data-[hover]:border-neutral-200',
         'data-[active]:scale-95 data-[disabled]:bg-neutral-300 data-[disabled]:border-neutral-300 data-[disabled]:text-neutral-600'
       ],
-      secondary: ''
+      secondary: '',
+      ghost: [
+        'hover:bg-neutral-100/5'
+      ]
     },
     size: {
       default: '',
