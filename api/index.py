@@ -9,7 +9,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from api.database import create_db_and_tables
 from api.dependencies import SessionDependency, JWT_SECRET
-from api.models import User
+from api.models import User, Category, Issue
 
 # Create FastAPI instance
 app = FastAPI(openapi_url='/api/openapi.json')
@@ -58,11 +58,11 @@ async def login(user: User, session: SessionDependency):
     expiry_date = datetime.datetime.now() + datetime.timedelta(days=1)
     token = jwt.encode(payload={'exp': expiry_date, 'username': db_user.username}, key=JWT_SECRET, algorithm='HS256')
 
-    response =  JSONResponse(status_code=status.HTTP_202_ACCEPTED,
-                        content={'message': 'Login successful.', 'token': token, 'expires_at': expiry_date.isoformat()})
+    response = JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+                            content={'message': 'Login successful.', 'token': token,
+                                     'expires_at': expiry_date.isoformat()})
     response.set_cookie(key='auth_token', value=token, expires=expiry_date.astimezone(datetime.timezone.utc))
     return response
-
 
 
 @app.get('/api/auth/verify')
@@ -79,11 +79,22 @@ async def verify(token: str, session: SessionDependency):
     except:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token is invalid.')
 
+
 @app.get('/api/user/read')
-async def user_read(token:str, session: SessionDependency):
+async def user_read(token: str, session: SessionDependency):
     payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
     statement = select(User).where(User.username == payload['username'])
     result = session.exec(statement)
     db_user = result.first()
     db_user.password = ''
     return db_user
+
+
+@app.get('/api/category/read')
+async def category_read(session: SessionDependency):
+    categories = session.exec(select(Category)).all()
+    return categories
+
+@app.get('/api/issue/read')
+async def issue_read(session: SessionDependency):
+    issues = session.exec(select(Issue))
