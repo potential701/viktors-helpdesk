@@ -2,6 +2,7 @@
 
 import {cookies} from "next/headers";
 import axios from "axios";
+import {User} from "@/lib/types";
 
 export async function getUser() {
   const cookieStore = await cookies();
@@ -14,5 +15,5 @@ export async function getUser() {
     }
   );
 
-  return response.data;
+  return response.data as User;
 }
