@@ -20,7 +20,7 @@ export default function LoginForm() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const login = axios.post('/api/login', {
+    const login = axios.post('/api/auth/login', {
       username: username,
       password: password
     })

@@ -22,7 +22,7 @@ export default function RegisterForm() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const register = axios.post('/api/register', {
+    const register = axios.post('/api/auth/register', {
       username: username,
       password: password,
       access_level: accessLevel
