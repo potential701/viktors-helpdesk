@@ -57,10 +57,10 @@ export default async function HelpdeskSideNavigation() {
           </span>
             <ChevronDownIcon className='size-3'/>
           </MenuButton>
-          <MenuItems anchor='bottom start' className='bg-neutral-100/5 backdrop-blur w-52 rounded-lg p-2 mt-0.5'>
+          <MenuItems anchor='bottom start' className='bg-neutral-100/5 backdrop-blur w-48 rounded-lg p-2 mt-0.5'>
             <MenuItem>
               <Link href={'/auth/logout'} passHref>
-                <Button variant='ghost' className='w-full text-start'>Log Out</Button>
+                <Button variant='ghost' className='w-full text-start text-sm'>Log Out</Button>
               </Link>
             </MenuItem>
           </MenuItems>
