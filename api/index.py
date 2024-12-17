@@ -90,15 +90,42 @@ async def user_read(token: str, session: SessionDependency):
     return db_user
 
 
+@app.get('/api/user/read/all')
+async def user_read_all(session: SessionDependency):
+    users = session.exec(select(User)).all()
+    for user in users:
+        user.password = ''
+
+    return users
+
+
 @app.get('/api/category/read')
 async def category_read(session: SessionDependency):
     categories = session.exec(select(Category)).all()
     return categories
 
 
-@app.get('/api/issue/read')
-async def issue_read(session: SessionDependency):
+@app.get('/api/issue/read/unassigned')
+async def issue_read_unassigned(session: SessionDependency):
+    issues = session.exec(select(Issue).where(Issue.assigned_to == None)).all()
+    return issues
+
+
+@app.get('/api/issue/read/all')
+async def issue_read_all(session: SessionDependency):
     issues = session.exec(select(Issue)).all()
+    return issues
+
+
+@app.get('/api/issue/read/created')
+async def issue_read_created(userid: str, session: SessionDependency):
+    issues = session.exec(select(Issue).where(Issue.created_by_id == userid)).all()
+    return issues
+
+
+@app.get('/api/issue/read/assigned')
+async def issue_read_created(userid: str, session: SessionDependency):
+    issues = session.exec(select(Issue).where(Issue.assigned_to_id == userid)).all()
     return issues
 
 
@@ -106,4 +133,4 @@ async def issue_read(session: SessionDependency):
 async def issue_create(issue: Issue, session: SessionDependency):
     session.add(issue)
     session.commit()
-    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message':'Issue has been created.'})
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message': 'Issue has been created.'})
