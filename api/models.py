@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlmodel import SQLModel, Field, Relationship
 import datetime
 
@@ -39,7 +40,7 @@ class Issue(SQLModel, table=True):
 
     # Foreign Keys
     created_by_id: int | None = Field(default=None, foreign_key='user.id')
-    assigned_to_id: int | None = Field(default=None, foreign_key='user.id')
+    assigned_to_id: int | None = Field(default=None, foreign_key='user.id', nullable=True)
     category_id: int | None = Field(default=None, foreign_key='category.id')
 
     # Relationships
