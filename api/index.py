@@ -95,6 +95,15 @@ async def category_read(session: SessionDependency):
     categories = session.exec(select(Category)).all()
     return categories
 
+
 @app.get('/api/issue/read')
 async def issue_read(session: SessionDependency):
-    issues = session.exec(select(Issue))
+    issues = session.exec(select(Issue)).all()
+    return issues
+
+
+@app.post('/api/issue/create')
+async def issue_create(issue: Issue, session: SessionDependency):
+    session.add(issue)
+    session.commit()
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message':'Issue has been created.'})
