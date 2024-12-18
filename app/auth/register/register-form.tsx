@@ -11,6 +11,7 @@ import {getErrorMessage} from "@/lib/utilities";
 import {useRouter} from "next/navigation";
 import axios from 'axios';
 import {useState} from 'react';
+import Link from "next/link";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -62,6 +63,7 @@ export default function RegisterForm() {
           </Select>
         </Field>
       </Fieldset>
+      <Link href='/auth/login' className='inline-flex w-full mt-2'>Log in</Link>
       <Button type='submit' className='mt-6'>Register</Button>
     </form>
   );
