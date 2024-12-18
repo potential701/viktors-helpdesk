@@ -22,13 +22,13 @@ export default function IssueTable({issues, users, categories}:{issues: Issue[];
       {issues.map((issue) => (
         <tr key={issue.id} className='hover:bg-neutral-100/5'>
           <td>{issue.id}</td>
-          <td>
+          <td className='max-w-48'>
             <Link href={`/helpdesk/${issue.id}`} className='text-blue-400 hover:underline'>{issue.title}</Link>
           </td>
-          <td className='line-clamp-1'>{issue.description}</td>
+          <td className='line-clamp-1 max-w-48'>{issue.description}</td>
           <td>{issue.status}</td>
           <td>{issue.priority}</td>
-          <td>{format(issue.created_at, 'dd/MM/yyyy hh:MM')}</td>
+          <td>{format(issue.created_at, 'dd/MM/yyyy HH:mm')}</td>
           <td>{users.find(x => x.id === issue.created_by_id)?.username}</td>
           <td>{users.find(x => x.id === issue.assigned_to_id)?.username}</td>
           <td>{categories.find(x => x.id === issue.category_id)?.name}</td>
