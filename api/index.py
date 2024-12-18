@@ -9,7 +9,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 from api.database import create_db_and_tables
 from api.dependencies import SessionDependency, JWT_SECRET
-from api.models import User, Category, Issue
+from api.models import User, Category, Issue, Comment
 
 # Create FastAPI instance
 app = FastAPI(openapi_url='/api/openapi.json')
@@ -129,8 +129,65 @@ async def issue_read_created(userid: str, session: SessionDependency):
     return issues
 
 
+@app.get('/api/issue/read/{issue_id}')
+async def issue_read(issue_id: str, session: SessionDependency):
+    issue = session.exec(select(Issue).where(Issue.id == issue_id)).first()
+    return issue
+
+
 @app.post('/api/issue/create')
 async def issue_create(issue: Issue, session: SessionDependency):
     session.add(issue)
     session.commit()
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={'message': 'Issue has been created.'})
+
+
+@app.get('/api/issue/comment/read/{issue_id}')
+async def issue_comment_read(issue_id: str, session: SessionDependency):
+    comments = session.exec(select(Comment).where(Comment.issue_id == issue_id)).all()
+    return comments
+
+
+@app.post('/api/issue/comment/create')
+async def issue_comment_create(comment: Comment, session: SessionDependency):
+    session.add(comment)
+    session.commit()
+    return {'message': 'Comment has been created.'}
+
+
+@app.patch('/api/issue/update')
+async def issue_update(issue: Issue, session: SessionDependency):
+    new_issue = session.exec(select(Issue).where(Issue.id == issue.id)).first()
+    new_issue.assigned_to_id = issue.assigned_to_id
+    new_issue.updated_at = datetime.datetime.now()
+    new_issue.category_id = issue.category_id
+    new_issue.priority = issue.priority
+    new_issue.status = issue.status
+    session.add(new_issue)
+    session.commit()
+    return {'message': 'Issue has been updated.'}
+
+
+@app.delete('/api/issue/delete/{issue_id}')
+async def issue_delete(issue_id: int, session: SessionDependency):
+    issue = session.get(Issue, issue_id)
+    session.delete(issue)
+    session.commit()
+    return {'message': 'Issue has been deleted.'}
+
+
+@app.delete('/api/category/delete/{category_id}')
+async def category_delete(category_id: int, session: SessionDependency):
+    category = session.get(Category, category_id)
+    session.delete(category)
+    session.commit()
+    return {'message': 'Category has been deleted.'}
+
+
+@app.delete('/api/issue/comment/delete/{comment_id}')
+async def issue_delete_comment(comment_id: int, session: SessionDependency):
+    comment = session.get(Comment, comment_id)
+    session.delete(comment)
+    session.commit()
+    return {'message': 'Comment has been deleted.'}
+
