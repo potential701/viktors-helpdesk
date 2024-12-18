@@ -14,6 +14,9 @@ const variants = cva([
       secondary: '',
       ghost: [
         'hover:bg-neutral-100/5'
+      ],
+      danger: [
+        'bg-red-500 border border-red-500'
       ]
     },
     size: {
