@@ -10,6 +10,7 @@ import {getErrorMessage} from "@/lib/utilities";
 import {useRouter} from "next/navigation";
 import axios from 'axios';
 import {useState} from 'react';
+import Link from "next/link";
 
 export default function LoginForm() {
   const [username, setUsername] = useState<string>('');
@@ -52,6 +53,7 @@ export default function LoginForm() {
                  minLength={8} maxLength={36} value={password} onChange={x => setPassword(x.target.value)}/>
         </Field>
       </Fieldset>
+      <Link href='/auth/register' className='inline-flex w-full mt-2'>Register</Link>
       <Button type='submit' className='mt-6'>Log in</Button>
     </form>
   );
